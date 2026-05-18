@@ -1,36 +1,191 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# O'live - Aceite de Oliva Premium Peruano 🫒
 
-## Getting Started
+Sitio web de comercio electrónico para **O'live**, aceite de oliva virgen extra producido artesanalmente en el Valle de Ilo, Perú.
 
-First, run the development server:
+## 🌟 Características
+
+- ✨ **Diseño Elegante** - Interfaz moderna y sofisticada
+- 🎯 **Completamente Interactivo** - Botones, modales y notificaciones funcionales
+- 📱 **Responsive** - Optimizado para móvil, tablet y desktop
+- ♿ **Accesible** - Cumple con estándares WCAG
+- ⚡ **Rendimiento** - Rápido y optimizado
+- 🛒 **Modal de Compra** - Selección y simulación de compra
+- 🔔 **Notificaciones** - Sistema de toasts para feedback
+- 📍 **Smooth Scroll** - Navegación fluida entre secciones
+
+## 🛠 Stack Tecnológico
+
+- **Next.js 16.2.6** - Framework React
+- **React 19.2.4** - Librería UI
+- **TypeScript 5** - Tipado estático
+- **Tailwind CSS 4** - Estilos
+- **ESLint 9** - Linting
+
+## 📦 Dependencias
+
+```json
+{
+  "dependencies": {
+    "next": "16.2.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+```
+
+## 🚀 Inicio Rápido
+
+### Prerrequisitos
+- Node.js 18+
+- npm o yarn
+
+### Instalación
+
+```bash
+# Clonar repositorio
+git clone https://github.com/oscarvargascaldas/olive-web.git
+cd olive-web
+
+# Instalar dependencias
+npm install
+```
+
+### Desarrollo
 
 ```bash
 npm run dev
-# or
+# o
 yarn dev
-# or
+# o
 pnpm dev
-# or
+# o
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador para ver el resultado.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build para Producción
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## 📁 Estructura del Proyecto
 
-To learn more about Next.js, take a look at the following resources:
+```
+olive-web/
+├── app/
+│   ├── components/
+│   │   ├── Button.tsx          # Botón reutilizable
+│   │   ├── Modal.tsx           # Modal base
+│   │   ├── BuyModal.tsx        # Modal de compra
+│   │   └── Toast.tsx           # Notificaciones
+│   ├── page.tsx                # Página principal
+│   ├── layout.tsx              # Layout raíz
+│   └── globals.css             # Estilos globales
+├── public/                     # Assets estáticos
+├── package.json
+├── tsconfig.json
+├── tailwind.config.ts
+├── next.config.ts
+└── README.md
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🎨 Componentes Principales
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Button (`app/components/Button.tsx`)
+Botón reutilizable con variantes y estados
 
-## Deploy on Vercel
+```tsx
+<Button 
+  variant="primary" 
+  onClick={handleClick}
+  loading={isLoading}
+>
+  Comprar
+</Button>
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### BuyModal (`app/components/BuyModal.tsx`)
+Modal interactivo para seleccionar y comprar productos
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Toast (`app/components/Toast.tsx`)
+Notificaciones con auto-cierre
+
+```tsx
+addToast('¡Compra completada!', 'success');
+```
+
+## 🎯 Secciones Disponibles
+
+1. **Hero** - Presentación principal
+2. **Nosotros** - Información sobre el producto
+3. **Colección** - Productos disponibles
+4. **Proceso** - Cómo hacemos nuestro aceite
+5. **Beneficios** - Ventajas del producto
+
+## ✨ Características Interactivas
+
+### Navegación Funcional
+- Scroll suave a secciones
+- Botones de navegación conectados
+- Notificaciones de acción
+
+### Modal de Compra
+- Selección de 3 productos
+- Estados de carga
+- Confirmación de compra
+
+### Retroalimentación Visual
+- Hover effects
+- Animaciones suaves
+- Sistema de toasts
+
+## 📱 Responsividad
+
+- **Mobile First** - Optimizado para dispositivos pequeños
+- **Breakpoints** - md (768px) y superiores
+- **Flexbox y Grid** - Layouts modernos
+
+## 🔍 SEO
+
+- Metadatos optimizados
+- Lenguaje español configurado
+- Estructura semántica
+- Open Graph integrado
+
+## 🚀 Deploy con Vercel
+
+1. Conecta tu repositorio a Vercel
+2. Vercel detectará Next.js automáticamente
+3. Click en "Deploy"
+
+Ver sitio en vivo: [https://olive-web-one.vercel.app](https://olive-web-one.vercel.app)
+
+## 📄 Licencia
+
+Este proyecto es privado y pertenece a Oscar Vargas Caldas.
+
+## 🤝 Contribuciones
+
+Para reportar bugs o sugerir mejoras, abre un issue en GitHub.
+
+## 📞 Contacto
+
+- Email: oscarvargascaldas@gmail.com
+- GitHub: [@oscarvargascaldas](https://github.com/oscarvargascaldas)
+
+---
+
+**O'live** - Tradición que perdura 🫒
