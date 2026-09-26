@@ -1,10 +1,10 @@
 import NextAuth from 'next-auth';
+import type { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import connectDB from '@/lib/db';
 import User from '@/lib/models/User';
-import Cart from '@/lib/models/Cart';
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -38,14 +38,14 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }: any) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
       }
       return token;
     },
-    async session({ session, token }: any) {
-      if (session.user) {
+    async session({ session, token }) {
+      if (session.user && token.id) {
         session.user.id = token.id;
       }
       return session;

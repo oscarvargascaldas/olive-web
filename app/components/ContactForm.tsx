@@ -11,7 +11,6 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
 
   const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL;
   const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE_NUMBER;
@@ -41,9 +40,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
       alert('Por favor completa todos los campos');
       return;
     }
-    setLoading(true);
     setTimeout(() => {
-      setLoading(false);
       setName('');
       setEmail('');
       setMessage('');

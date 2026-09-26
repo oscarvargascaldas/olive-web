@@ -5,10 +5,13 @@ import Cart from '@/lib/models/Cart';
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, nombre } = await req.json();
+    const body = await req.json();
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+    const password = typeof body.password === 'string' ? body.password : '';
+    const nombre = typeof body.nombre === 'string' ? body.nombre.trim() : '';
 
     // Validar datos
-    if (!email || !password || !nombre) {
+    if (!email || !password || !nombre || nombre.length > 100) {
       return NextResponse.json(
         { error: 'Email, contraseña y nombre son requeridos' },
         { status: 400 }
@@ -58,10 +61,10 @@ export async function POST(req: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error en registro:', error);
     return NextResponse.json(
-      { error: error.message || 'Error en el servidor' },
+      { error: error instanceof Error ? error.message : 'Error en el servidor' },
       { status: 500 }
     );
   }

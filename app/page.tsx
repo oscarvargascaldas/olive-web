@@ -4,6 +4,10 @@ import { useState } from 'react';
 import Button from './components/Button';
 import BuyModal from './components/BuyModal';
 import Toast from './components/Toast';
+import Cart from './components/Cart';
+import { useCart } from './context/CartContext';
+import { products, getProduct } from '@/lib/products';
+import Link from 'next/link';
 
 interface ToastItem {
   id: string;
@@ -12,6 +16,7 @@ interface ToastItem {
 }
 
 export default function OliveLanding() {
+  const { addToCart } = useCart();
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
@@ -25,13 +30,12 @@ export default function OliveLanding() {
   };
 
   const handleBuyConfirm = (productId: string) => {
-    const productNames: { [key: string]: string } = {
-      'bottle-250': 'Botella 250ml',
-      'bottle-500': 'Botella 500ml',
-      'pack-2x500': 'Pack 2x500ml',
-    };
+    const product = getProduct(productId);
+    if (!product) return;
+
+    addToCart({ id: product.id, name: product.name, price: product.price, quantity: 1 });
     addToast(
-      `¡${productNames[productId] || 'Producto'} agregado al carrito!`,
+      `¡${product.name} agregado al carrito!`,
       'success'
     );
   };
@@ -52,7 +56,7 @@ export default function OliveLanding() {
             onClick={() => scrollToSection('hero')}
             className="hover:opacity-70 transition-opacity"
           >
-            <h1 className="text-4xl leading-none font-serif">O'live</h1>
+            <h1 className="text-4xl leading-none font-serif">O&apos;live</h1>
             <p className="uppercase tracking-[0.3em] text-[10px] text-[#6d6458] mt-1">
               Aceite de oliva
             </p>
@@ -91,9 +95,16 @@ export default function OliveLanding() {
             </button>
           </nav>
 
-          <Button onClick={() => setIsBuyModalOpen(true)}>
-            Comprar ahora
-          </Button>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/auth/login"
+              className="hidden sm:inline text-sm uppercase tracking-[0.15em] text-[#554d43] hover:text-[#202015]"
+            >
+              Iniciar sesión
+            </Link>
+            <Cart />
+            <Button onClick={() => setIsBuyModalOpen(true)}>Comprar ahora</Button>
+          </div>
         </div>
       </header>
 
@@ -166,7 +177,7 @@ export default function OliveLanding() {
             </h2>
 
             <p className="text-lg leading-relaxed text-[#554d43] mb-12 max-w-xl">
-              Cada botella de O'live representa una cosecha cuidadosamente
+              Cada botella de O&apos;live representa una cosecha cuidadosamente
               seleccionada, elaborada bajo un proceso artesanal que busca
               preservar el carácter puro del aceite de oliva premium.
             </p>
@@ -225,24 +236,26 @@ export default function OliveLanding() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { name: 'Botella 250ml', price: '$$', desc: 'Perfecto para probar' },
-              { name: 'Botella 500ml', price: '$$$', desc: 'Para uso diario' },
-              { name: 'Pack 2x500ml', price: '$$$$', desc: 'Mejor valor' },
-            ].map((product, idx) => (
+            {products.map((product) => (
               <div
-                key={idx}
+                key={product.id}
                 className="bg-[#ece4d8] rounded-3xl p-8 text-center hover:shadow-xl transition-shadow"
               >
                 <div className="text-6xl mb-4">🫒</div>
                 <h3 className="text-2xl font-serif text-[#2a261f] mb-2">
                   {product.name}
                 </h3>
-                <p className="text-[#6d6458] mb-4">{product.desc}</p>
+                <p className="text-[#6d6458] mb-4">{product.description}</p>
                 <p className="text-3xl font-bold text-[#554d43] mb-6">
-                  {product.price}
+                  ${product.price.toFixed(2)}
                 </p>
-                <Button onClick={() => setIsBuyModalOpen(true)} className="w-full">
+                <Button
+                  onClick={() => {
+                    addToCart({ id: product.id, name: product.name, price: product.price, quantity: 1 });
+                    addToast(`¡${product.name} agregado al carrito!`, 'success');
+                  }}
+                  className="w-full"
+                >
                   Agregar
                 </Button>
               </div>
@@ -291,7 +304,7 @@ export default function OliveLanding() {
             ¿Preguntas?
           </h2>
           <p className="text-xl text-[#554d43] mb-8">
-            Contáctanos para conocer más sobre O'live
+            Contáctanos para conocer más sobre O&apos;live
           </p>
           <div className="flex gap-4 flex-wrap justify-center">
             <Button onClick={() => addToast('Email copiado', 'success')}>

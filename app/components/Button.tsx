@@ -2,7 +2,8 @@ import React from 'react';
 
 interface ButtonProps {
   children: React.ReactNode;
-  onClick?: () => void;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  type?: 'button' | 'submit' | 'reset';
   variant?: 'primary' | 'secondary';
   disabled?: boolean;
   loading?: boolean;
@@ -12,6 +13,7 @@ interface ButtonProps {
 export default function Button({
   children,
   onClick,
+  type = 'button',
   variant = 'primary',
   disabled = false,
   loading = false,
@@ -27,6 +29,7 @@ export default function Button({
 
   return (
     <button
+      type={type}
       onClick={onClick}
       disabled={disabled || loading}
       className={`${baseStyles} ${variantStyles[variant]} ${className}`}

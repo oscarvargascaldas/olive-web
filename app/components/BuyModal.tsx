@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Modal from './Modal';
 import Button from './Button';
+import { products } from '@/lib/products';
 
 interface BuyModalProps {
   isOpen: boolean;
@@ -13,12 +14,6 @@ interface BuyModalProps {
 export default function BuyModal({ isOpen, onClose, onConfirm }: BuyModalProps) {
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  const products = [
-    { id: 'bottle-250', name: 'Botella 250ml', price: '12,99 USD', desc: 'Tamaño perfecto para probar' },
-    { id: 'bottle-500', name: 'Botella 500ml', price: '24,99 USD', desc: 'Para uso diario' },
-    { id: 'pack-2x500', name: 'Pack 2x500ml', price: '44,99 USD', desc: 'Mejor valor', badge: 'Ahorra 10%' },
-  ];
 
   const handleConfirm = async () => {
     if (!selectedProduct) return;
@@ -60,8 +55,8 @@ export default function BuyModal({ isOpen, onClose, onConfirm }: BuyModalProps) 
                   </span>
                 )}
               </div>
-              <p className="text-sm text-[#6d6458]">{product.desc}</p>
-              <p className="text-lg font-bold text-[#202015] mt-1">{product.price}</p>
+              <p className="text-sm text-[#6d6458]">{product.description}</p>
+              <p className="text-lg font-bold text-[#202015] mt-1">${product.price.toFixed(2)} USD</p>
             </div>
           </label>
         ))}

@@ -72,7 +72,22 @@ NEXT_PUBLIC_WHATSAPP_API_KEY=tu_api_key_aqui
 
 # API (opcional)
 NEXT_PUBLIC_API_URL=http://localhost:3000/api
+
+# MongoDB y autenticación (necesarias para cuentas, carrito persistente y pedidos)
+MONGODB_URI=mongodb+srv://<usuario>:<contraseña>@<cluster>.mongodb.net/olive
+NEXTAUTH_SECRET=genera-un-secreto-largo-y-aleatorio
+NEXTAUTH_URL=http://localhost:3000
 ```
+
+### Preparar MongoDB
+
+1. Crea un proyecto y un cluster gratuito en [MongoDB Atlas](https://www.mongodb.com/atlas).
+2. Crea un usuario de base de datos y permite el acceso desde tu IP durante desarrollo.
+3. Copia la cadena de conexión en `MONGODB_URI` y reemplaza los valores entre `< >`.
+4. Genera `NEXTAUTH_SECRET` con un gestor de secretos; nunca lo publiques ni lo prefijes con `NEXT_PUBLIC_`.
+5. Reinicia `npm run dev` después de modificar `.env.local`.
+
+El esquema crea automáticamente las colecciones `users`, `carts` y `orders` cuando se registra el primer usuario. Los precios válidos se mantienen en `lib/products.ts` y el servidor los valida antes de guardar el carrito.
 
 ---
 
@@ -158,6 +173,9 @@ Abre http://localhost:3000 en tu navegador.
    - `NEXT_PUBLIC_CONTACT_EMAIL`
    - `NEXT_PUBLIC_WHATSAPP_PHONE_NUMBER`
    - `NEXT_PUBLIC_WHATSAPP_API_KEY`
+   - `MONGODB_URI`
+   - `NEXTAUTH_SECRET`
+   - `NEXTAUTH_URL` (la URL pública de Vercel)
 
 ### 3. Deploy
 1. Click en **Deploy**

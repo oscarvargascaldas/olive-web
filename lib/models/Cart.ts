@@ -1,6 +1,6 @@
 import { Schema, model, models, Types } from 'mongoose';
 
-interface CartItem {
+export interface CartItem {
   productId: string;
   nombre: string;
   precio: number;
@@ -8,7 +8,7 @@ interface CartItem {
   imagen?: string;
 }
 
-interface ICart {
+export interface ICart {
   userId: Types.ObjectId;
   items: CartItem[];
   total: number;
