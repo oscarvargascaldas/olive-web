@@ -74,20 +74,24 @@ NEXT_PUBLIC_WHATSAPP_API_KEY=tu_api_key_aqui
 NEXT_PUBLIC_API_URL=http://localhost:3000/api
 
 # MongoDB y autenticación (necesarias para cuentas, carrito persistente y pedidos)
-MONGODB_URI=mongodb+srv://<usuario>:<contraseña>@<cluster>.mongodb.net/olive
-NEXTAUTH_SECRET=genera-un-secreto-largo-y-aleatorio
+MONGODB_URI=mongodb+srv://<usuario>:<contraseña>@<cluster>.mongodb.net/olive?retryWrites=true&w=majority
+NEXTAUTH_SECRET=<secreto-aleatorio-de-al-menos-32-bytes>
 NEXTAUTH_URL=http://localhost:3000
 ```
 
 ### Preparar MongoDB
 
-1. Crea un proyecto y un cluster gratuito en [MongoDB Atlas](https://www.mongodb.com/atlas).
-2. Crea un usuario de base de datos y permite el acceso desde tu IP durante desarrollo.
-3. Copia la cadena de conexión en `MONGODB_URI` y reemplaza los valores entre `< >`.
-4. Genera `NEXTAUTH_SECRET` con un gestor de secretos; nunca lo publiques ni lo prefijes con `NEXT_PUBLIC_`.
-5. Reinicia `npm run dev` después de modificar `.env.local`.
+1. Crea un proyecto y un cluster en [MongoDB Atlas](https://www.mongodb.com/atlas).
+2. En **Database Access**, crea un usuario dedicado con permisos `readWrite` solo para la base `olive`.
+3. En **Network Access**, permite tu IP para desarrollo local. Para producción, configura acceso siguiendo la política de red de tu proveedor; evita `0.0.0.0/0` si puedes limitar los orígenes.
+4. En el cluster, selecciona **Connect > Drivers**, copia la URI Node.js y colócala en `MONGODB_URI`. Cambia el nombre de la base a `olive` y reemplaza los marcadores. Codifica los caracteres especiales de usuario/contraseña en formato URL.
+5. Crea un secreto aleatorio para `NEXTAUTH_SECRET` (por ejemplo, con `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`). No lo publiques ni lo prefijes con `NEXT_PUBLIC_`.
+6. Copia `.env.example` como `.env.local`, completa los valores, y reinicia `npm run dev`.
+7. Abre `/api/health/database` en el navegador. Una respuesta `{"ok":true,"database":"connected"}` confirma que Atlas es accesible.
 
 El esquema crea automáticamente las colecciones `users`, `carts` y `orders` cuando se registra el primer usuario. Los precios válidos se mantienen en `lib/products.ts` y el servidor los valida antes de guardar el carrito.
+
+En Vercel, añade `MONGODB_URI`, `NEXTAUTH_SECRET` y `NEXTAUTH_URL` en **Project Settings > Environment Variables** para los entornos necesarios, y vuelve a desplegar para aplicar los cambios. No guardes credenciales en el repositorio.
 
 ---
 
