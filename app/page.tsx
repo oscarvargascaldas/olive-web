@@ -8,6 +8,7 @@ import Cart from './components/Cart';
 import { useCart } from './context/CartContext';
 import { products, getProduct } from '@/lib/products';
 import Link from 'next/link';
+import ContactForm from './components/ContactForm';
 
 interface ToastItem {
   id: string;
@@ -306,17 +307,14 @@ export default function OliveLanding() {
           <p className="text-xl text-[#554d43] mb-8">
             Contáctanos para conocer más sobre O&apos;live
           </p>
-          <div className="flex gap-4 flex-wrap justify-center">
-            <Button onClick={() => addToast('Email copiado', 'success')}>
-              📧 Enviar Email
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => addToast('WhatsApp abierto', 'info')}
-            >
-              💬 WhatsApp
-            </Button>
-          </div>
+          <ContactForm
+            onSuccess={() =>
+              addToast(
+                'Se abrió la aplicación correspondiente para completar el envío.',
+                'success',
+              )
+            }
+          />
         </div>
       </section>
 
