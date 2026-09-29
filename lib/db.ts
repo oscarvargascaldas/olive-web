@@ -1,48 +1,50 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
-  throw new Error('Por favor define MONGODB_URI en .env.local');
+interface MongooseCache {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
 }
 
-let cached = global as any;
+const globalWithMongoose = globalThis as typeof globalThis & {
+  mongooseCache?: MongooseCache;
+};
 
-if (!cached.mongoose) {
-  cached.mongoose = { conn: null, promise: null };
-}
+const cached =
+  globalWithMongoose.mongooseCache ??
+  (globalWithMongoose.mongooseCache = { conn: null, promise: null });
 
 async function connectDB() {
-  if (cached.mongoose.conn) {
-    console.log('✅ MongoDB ya está conectado');
-    return cached.mongoose.conn;
+  const uri = process.env.MONGODB_URI?.trim();
+
+  if (!uri) {
+    throw new Error('Falta MONGODB_URI. Configúrala en .env.local o en las variables del despliegue.');
   }
 
-  if (!cached.mongoose.promise) {
-    const opts = {
-      bufferCommands: false,
-    };
+  if (!/^mongodb(?:\+srv)?:\/\//.test(uri) || /<[^>]+>/.test(uri)) {
+    throw new Error('MONGODB_URI no parece válida. Usa la cadena mongodb:// o mongodb+srv:// de Atlas y reemplaza todos sus marcadores.');
+  }
 
-    cached.mongoose.promise = mongoose
-      .connect(MONGODB_URI, opts)
-      .then((mongoose) => {
-        console.log('✅ MongoDB conectado exitosamente');
-        return mongoose;
-      })
-      .catch((error) => {
-        console.error('❌ Error conectando a MongoDB:', error);
-        throw error;
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    cached.promise = mongoose
+      .connect(uri, {
+        bufferCommands: false,
+        maxPoolSize: 10,
+        serverSelectionTimeoutMS: 10_000,
       });
   }
 
   try {
-    cached.mongoose.conn = await cached.mongoose.promise;
-  } catch (e) {
-    cached.mongoose.promise = null;
-    throw e;
+    cached.conn = await cached.promise;
+  } catch (error) {
+    cached.promise = null;
+    throw error;
   }
 
-  return cached.mongoose.conn;
+  return cached.conn;
 }
 
 export default connectDB;

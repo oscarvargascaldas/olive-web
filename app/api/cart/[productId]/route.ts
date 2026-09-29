@@ -2,13 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import connectDB from '@/lib/db';
 import Cart from '@/lib/models/Cart';
+import type { CartItem } from '@/lib/models/Cart';
 import { authOptions } from '../../auth/[...nextauth]/route';
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { productId: string } }
+  context: { params: Promise<{ productId: string }> }
 ) {
   try {
+    const { productId } = await context.params;
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
@@ -20,7 +22,7 @@ export async function DELETE(
 
     await connectDB();
 
-    const cart = await Cart.findOne({ userId: (session.user as any).id });
+    const cart = await Cart.findOne({ userId: session.user.id });
 
     if (!cart) {
       return NextResponse.json(
@@ -29,11 +31,11 @@ export async function DELETE(
       );
     }
 
-    cart.items = cart.items.filter((item: any) => item.productId !== params.productId);
+    cart.items = cart.items.filter((item: CartItem) => item.productId !== productId);
 
     // Recalcular total
     cart.total = cart.items.reduce(
-      (sum: number, item: any) => sum + item.precio * item.cantidad,
+      (sum: number, item: CartItem) => sum + item.precio * item.cantidad,
       0
     );
 
@@ -46,10 +48,10 @@ export async function DELETE(
       },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error eliminando del carrito:', error);
     return NextResponse.json(
-      { error: error.message || 'Error en el servidor' },
+      { error: error instanceof Error ? error.message : 'Error en el servidor' },
       { status: 500 }
     );
   }
@@ -57,9 +59,10 @@ export async function DELETE(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { productId: string } }
+  context: { params: Promise<{ productId: string }> }
 ) {
   try {
+    const { productId } = await context.params;
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
@@ -80,7 +83,7 @@ export async function PUT(
 
     await connectDB();
 
-    const cart = await Cart.findOne({ userId: (session.user as any).id });
+    const cart = await Cart.findOne({ userId: session.user.id });
 
     if (!cart) {
       return NextResponse.json(
@@ -89,7 +92,7 @@ export async function PUT(
       );
     }
 
-    const item = cart.items.find((item: any) => item.productId === params.productId);
+    const item = cart.items.find((item: CartItem) => item.productId === productId);
 
     if (!item) {
       return NextResponse.json(
@@ -102,7 +105,7 @@ export async function PUT(
 
     // Recalcular total
     cart.total = cart.items.reduce(
-      (sum: number, item: any) => sum + item.precio * item.cantidad,
+      (sum: number, item: CartItem) => sum + item.precio * item.cantidad,
       0
     );
 
@@ -115,10 +118,10 @@ export async function PUT(
       },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error actualizando carrito:', error);
     return NextResponse.json(
-      { error: error.message || 'Error en el servidor' },
+      { error: error instanceof Error ? error.message : 'Error en el servidor' },
       { status: 500 }
     );
   }

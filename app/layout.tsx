@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Providers from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,6 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://olive-web-one.vercel.app"),
   title: "O'live - Aceite de Oliva Virgen Extra Premium | Perú",
   description: "Aceite de oliva virgen extra artesanal del Valle de Ilo, Perú. Tradición, calidad y sabor auténtico en cada gota.",
   keywords: ["aceite de oliva", "virgen extra", "Perú", "Ilo", "aceite artesanal", "productos premium"],
@@ -33,7 +35,11 @@ export const metadata: Metadata = {
     type: "website",
   },
   robots: "index, follow",
-  viewport: "width=device-width, initial-scale=1",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -50,7 +56,9 @@ export default function RootLayout({
         <meta charSet="utf-8" />
         <meta name="theme-color" content="#202015" />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

@@ -11,50 +11,52 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL;
   const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE_NUMBER;
 
-  const handleEmailClick = () => {
+  const handleEmailSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError('');
+
     if (!contactEmail) {
-      alert('Email no configurado');
+      setError('El correo de contacto aún no está configurado.');
       return;
     }
+
     const subject = `Consulta de ${name || 'Cliente'}`;
     const body = `Nombre: ${name}\nCorreo: ${email}\n\nMensaje:\n${message}`;
     window.location.href = `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    onSuccess?.();
   };
 
-  const handleWhatsAppClick = () => {
+  const handleWhatsAppClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setError('');
+
     if (!whatsappPhone) {
-      alert('WhatsApp no configurado');
+      setError('WhatsApp aún no está configurado.');
       return;
     }
-    const text = `Hola, soy ${name}. ${message}`;
-    window.open(`https://wa.me/${whatsappPhone}?text=${encodeURIComponent(text)}`, '_blank');
-  };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name || !email || !message) {
-      alert('Por favor completa todos los campos');
+    const text = `Hola, soy ${name}. ${message}`;
+    const form = event.currentTarget.form;
+    if (!form?.reportValidity()) {
       return;
     }
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setName('');
-      setEmail('');
-      setMessage('');
-      onSuccess?.();
-    }, 500);
+
+    window.open(`https://wa.me/${whatsappPhone}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+    onSuccess?.();
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-lg mx-auto">
+    <form onSubmit={handleEmailSubmit} className="space-y-4 max-w-lg mx-auto text-left">
       <input
+        name="name"
         type="text"
+        autoComplete="name"
+        aria-label="Tu nombre"
         placeholder="Tu nombre"
         value={name}
         onChange={(e) => setName(e.target.value)}
@@ -63,7 +65,10 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
       />
 
       <input
+        name="email"
         type="email"
+        autoComplete="email"
+        aria-label="Tu correo"
         placeholder="Tu correo"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -72,17 +77,25 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
       />
 
       <textarea
+        name="message"
+        aria-label="Tu mensaje"
         placeholder="Tu mensaje"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         required
         rows={4}
         className="w-full px-4 py-3 rounded-lg border border-[#d4c4b0] bg-white focus:outline-none focus:border-[#202015]"
-      ></textarea>
+      />
+
+      {error && (
+        <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
+          {error}
+        </p>
+      )}
 
       <div className="flex gap-3 flex-wrap">
-        <Button type="button" onClick={handleEmailClick} className="flex-1">
-          📧 Enviar por Email
+        <Button type="submit" className="flex-1">
+          📧 Enviar por correo
         </Button>
 
         <Button 
@@ -91,9 +104,12 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
           onClick={handleWhatsAppClick}
           className="flex-1"
         >
-          💬 WhatsApp
+          💬 Enviar por WhatsApp
         </Button>
       </div>
+      <p className="text-xs text-[#6d6458]">
+        Se abrirá tu aplicación de correo o WhatsApp con el mensaje preparado; confirma el envío allí.
+      </p>
     </form>
   );
 }

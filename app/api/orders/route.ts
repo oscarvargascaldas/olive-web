@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
     await connectDB();
 
-    const cart = await Cart.findOne({ userId: (session.user as any).id });
+    const cart = await Cart.findOne({ userId: session.user.id });
 
     if (!cart || cart.items.length === 0) {
       return NextResponse.json(
@@ -27,10 +27,32 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { shippingAddress } = await req.json();
+    const body = await req.json();
+    const address = body.shippingAddress;
+    const requiredAddressFields = ['nombre', 'email', 'telefono', 'direccion', 'ciudad'];
+    if (
+      !address ||
+      requiredAddressFields.some(
+        (field) => typeof address[field] !== 'string' || !address[field].trim()
+      )
+    ) {
+      return NextResponse.json(
+        { error: 'Completa nombre, correo, teléfono, dirección y ciudad para el envío.' },
+        { status: 400 }
+      );
+    }
+
+    const shippingAddress = {
+      nombre: address.nombre.trim(),
+      email: address.email.trim().toLowerCase(),
+      telefono: address.telefono.trim(),
+      direccion: address.direccion.trim(),
+      ciudad: address.ciudad.trim(),
+      codigoPostal: typeof address.codigoPostal === 'string' ? address.codigoPostal.trim() : '',
+    };
 
     const order = await Order.create({
-      userId: (session.user as any).id,
+      userId: session.user.id,
       items: cart.items,
       total: cart.total,
       shippingAddress,
@@ -49,16 +71,16 @@ export async function POST(req: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creando orden:', error);
     return NextResponse.json(
-      { error: error.message || 'Error en el servidor' },
+      { error: error instanceof Error ? error.message : 'Error en el servidor' },
       { status: 500 }
     );
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 
@@ -71,15 +93,15 @@ export async function GET(req: NextRequest) {
 
     await connectDB();
 
-    const orders = await Order.find({ userId: (session.user as any).id }).sort({
+    const orders = await Order.find({ userId: session.user.id }).sort({
       createdAt: -1,
     });
 
     return NextResponse.json(orders, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error obteniendo órdenes:', error);
     return NextResponse.json(
-      { error: error.message || 'Error en el servidor' },
+      { error: error instanceof Error ? error.message : 'Error en el servidor' },
       { status: 500 }
     );
   }
